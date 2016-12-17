@@ -23,11 +23,17 @@ namespace ServiceCRM.Models
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {
+            // This is mandatory to run the db related test
+          
+            Database.SetInitializer<ApplicationDbContext>(null);
         }
 
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
         }
+
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Activity> Activities { get; set; }
     }
 }

@@ -1,0 +1,145 @@
+﻿@model IEnumerable<ServiceCRM.Models.Customer>
+@using ServiceCRM.Helpers
+@{
+    ViewBag.Title = "Customers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+ 
+<div class="row">
+    <div class="col-md-12">
+        <h2>Customers</h2>
+    </div>
+</div>
+    <hr />
+<div class="row">
+    <div class="col-md-12">
+        <p class="pull-right"><a href='@Url.Action("Create", "Customer")' class="btn btn-primary">Create Customer</a></p>
+    </div>
+</div>
+    <div class="row">
+        <table id="customers" class="table table-bordered table-hover">
+            <thead>
+                <tr class="bg-info">
+                    <th class="text-center">
+                        Company Name
+                    </th>
+                    <th class="text-center">
+                        First Name
+                    </th>
+                    <th class="text-center">
+                        Last Name
+                    </th>
+                    <th class="text-center">
+                        Email Address
+                    </th>
+                    <th class="text-center">
+                        Phone Number
+                    </th>
+
+                    <th class="text-center"> Actions </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+            {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Company)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FirstName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LastName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td>
+                            @Html.DisplayForPhone(item.Phone)
+                        </td>
+
+                        <td class="text-center">
+                            <a class="glyphicon glyphicon-bullhorn js-add" data-customer-id="@item.Id"  data-toggle="tooltip" data-placement="top" title="Add Activity"></a>
+                            
+                             @Html.ActionLink(" ", "Edit", new { id = item.Id }, new { @class = "glyphicon glyphicon-edit", data_toggle = "tooltip", data_placement = "top", title = "Edit Customer" }) |
+                            <a class="glyphicon glyphicon-trash js-delete" data-customer-id="@item.Id" data-toggle="tooltip" data-placement="top" title="Delete Customer"></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+<!-- Modal -->
+<div id="activityModal" class="modal fade" role="dialog"  data-url="@Url.Action("QuickActivity")">
+    <div class="modal-dialog">
+ 
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Quick Add Activity</h4>
+            </div>
+            <div class="modal-body">
+                <div id="activityContainer"></div>
+            </div>
+            <div class="modal-footer">
+               
+            </div>
+        </div>
+
+    </div>
+</div>
+    @section scripts
+{
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+                $("#customers").DataTable();
+                $("#customers").on("click", ".js-delete", function () {
+                    var button = $(this);
+                    swal({
+                        title: "Are you sure?",
+                        text: "You will not be able to recover this customer or its activity!",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Yes, delete it!",
+                        closeOnConfirm: false
+                    }, function () {
+
+                        $.ajax({
+                            url: "/api/customers/" + button.attr("data-customer-id"),
+                            method: "DELETE",
+                            success: function () {
+                                swal("Deleted!", "Your customer has been deleted.", "success");
+                                $.ajax({
+                                    url: "/api/activities/" + button.attr("data-customer-id") + "/deleteallactivity",
+                                    method: "DELETE",
+                                    success: function () {
+
+                                    }
+                                });
+                                location.reload();
+                            },
+                            error: function () {
+                                swal("Not Deleted!", "Your customer could not  be deleted.", "error");
+                            }
+
+                        })
+
+                    });
+                })
+                $("#customers").on("click", ".js-add", function () {
+                    var button = $(this);
+                    var url = $('#activityModal').data('url');
+                    var param = button.attr("data-customer-id")
+                    $.get(url + '?idCustomer=' + param, function (data) {
+                        $('#activityContainer').html(data);
+
+                        $('#activityModal').modal('show');
+                    });
+                });
+            });
+        </script>
+    }

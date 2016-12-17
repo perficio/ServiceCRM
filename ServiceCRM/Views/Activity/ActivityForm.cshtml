@@ -1,0 +1,88 @@
+﻿@model ServiceCRM.Models.NewActivityModel
+
+
+@{
+    ViewBag.Title = "ActivityForm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit Activity</h2>
+<hr />
+
+@using (Html.BeginForm("Save", "Activity"))
+{
+    @Html.AntiForgeryToken()
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Activity.IdCustomer, htmlAttributes: new { @class = "control-label" })
+                @Html.DropDownListFor(model => model.Activity.IdCustomer, new SelectList(Model.Customers, "Id", "Company"), "Select Company", new { @class = "selectpicker  form-control" })
+                @Html.ValidationMessageFor(model => model.Activity.IdCustomer, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Activity.ActivityType, htmlAttributes: new { @class = "control-label" })
+                @Html.DropDownListFor(model => model.Activity.ActivityType, new SelectList(Model.ActivityType, "Text", "Value"), "Select Activity Type",   new { @class = "selectpicker form-control" } )
+                @Html.ValidationMessageFor(model => model.Activity.ActivityType, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Activity.DueDate, htmlAttributes: new { @class = "control-label" })
+
+                @Html.EditorFor(model => model.Activity.DueDate, new { htmlAttributes = new { @class = "form-control datepicker" , @type = "date", id="duedate" } })
+                @Html.ValidationMessageFor(model => model.Activity.DueDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Activity.CompletedOn, htmlAttributes: new { @class = "control-label" })
+
+                @Html.EditorFor(model => model.Activity.CompletedOn, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Activity.CompletedOn, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+    </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Activity.Status, htmlAttributes: new { @class = "control-label" })
+
+                    @Html.DropDownListFor(model => model.Activity.Status, new SelectList(Model.Status, "Text", "Value"), "Select Status",  new { @class = "selectpicker form-control" } )
+                    @Html.ValidationMessageFor(model => model.Activity.Status, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Activity.Notes, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Activity.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Activity.Notes, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+        </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        @Html.HiddenFor(model => model.Activity.IdUser)
+                        @Html.HiddenFor(model => model.Activity.Id)
+                        <div class="pull-right">
+                            <a href='@Url.Action("List", "Activity")' class="btn btn-danger">Cancel</a>
+                            <input type="submit" value="Save Activity" class="btn btn-primary" />
+
+                        </div>
+                    </div>
+                </div>
+
+                }
+
+                @section Scripts {
+                    @Scripts.Render("~/bundles/jqueryval")
+                }
